@@ -6,7 +6,7 @@
 int main() {
     lexer_t lexer;
     
-    lexer_init(&lexer, "\"hello\",chr$(45+69);");
+    lexer_init(&lexer, "\"hello\",chr$(45+69);42");
 
     char *expected_strings[] = {
         "hello",
@@ -18,6 +18,7 @@ int main() {
         "69",
         ")",
         ";",
+        "42",
     };
 
     size_t i = 0;

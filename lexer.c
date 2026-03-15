@@ -24,7 +24,6 @@ static bool lexer_read_ident(lexer_t* lexer, token_t* token) {
     token->type = TOKEN_TYPE_IDENT;
     token->begin = lexer->cur;
     while(lexer->cur != lexer->end && isalnum(*++lexer->cur));
-    if (lexer->cur == lexer->end) return false;
     if (*lexer->cur == '$') lexer->cur += 1;
     token->end = lexer->cur;
     return true;
@@ -34,7 +33,6 @@ static bool lexer_read_num(lexer_t* lexer, token_t* token) {
     token->type = TOKEN_TYPE_NUM_LIT;
     token->begin = lexer->cur;
     while(lexer->cur != lexer->end && isdigit(*++lexer->cur));
-    if (lexer->cur == lexer->end) return false;
     token->end = lexer->cur;
     return true;
 }
