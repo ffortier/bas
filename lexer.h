@@ -10,6 +10,12 @@ typedef enum {
     TOKEN_TYPE_NUM_LIT,
     TOKEN_TYPE_OPAREN,
     TOKEN_TYPE_CPAREN,
+    TOKEN_TYPE_PLUS,
+    TOKEN_TYPE_MINUS,
+    TOKEN_TYPE_MULT,
+    TOKEN_TYPE_DIV,
+    TOKEN_TYPE_COMMA,
+    TOKEN_TYPE_SEMI,
 } token_type_t;
 
 typedef struct {
