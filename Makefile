@@ -1,4 +1,4 @@
-OBJS = bas.o lexer.o
+OBJS = lexer.o parser.o
 TESTSRCS = $(wildcard *_test.c)
 TESTS = $(TESTSRCS:.c=.log)
 CFLAGS = -Wall -g
@@ -12,13 +12,13 @@ run: bas
 
 test: $(TESTS)
 
-bas: $(OBJS)
-	clang -o bas $(OBJS)
+bas: bas.o $(OBJS)
+	clang -o bas $^
 
 %.o: %.c
 	clang -c $(CFLAGS) -o $@ $< -MMD -MP -MF $(@:.o=.d)
 
-%_test: %_test.o %.o
+%_test: %_test.o $(OBJS)
 	clang -o $@ $^
 
 %_test.log: %_test
@@ -26,6 +26,6 @@ bas: $(OBJS)
 
 clean:
 	rm -f $(OBJS) *.d *_test *_test.log *_test.o bas
-
+	
 -include $(wildcard *.d)
 

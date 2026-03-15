@@ -1,15 +1,8 @@
 #include "lexer.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
-void lexer_init(lexer_t* lexer, const char* input) {
-    lexer->begin = input;
-    lexer->end = input + strlen(input);
-    lexer->bol = input;
-    lexer->cur = input;
-    lexer->line = 1;
-}
 
 static bool lexer_read_str(lexer_t* lexer, token_t* token) {
     token->type = TOKEN_TYPE_STR_LIT;
@@ -55,6 +48,14 @@ static bool lexer_read_operator(lexer_t* lexer, token_t* token) {
     return true;
 }
 
+void lexer_init(lexer_t* lexer, const char* input) {
+    lexer->begin = input;
+    lexer->end = input + strlen(input);
+    lexer->bol = input;
+    lexer->cur = input;
+    lexer->line = 1;
+}
+
 bool lexer_next(lexer_t* lexer, token_t* token) {
     while (lexer->cur != lexer->end) {
         switch (*lexer->cur) {
@@ -78,3 +79,16 @@ bool lexer_next(lexer_t* lexer, token_t* token) {
 
     return false;
 }
+
+void lexer_report_error(lexer_t* lexer, FILE* out) {
+    int len = 0;
+
+    while(&lexer->begin[len] != lexer->end && lexer->begin[len] != '\n') {
+        len++;
+    }
+
+    fprintf(out, "Unexpected char at line %zu col %zu\n", lexer->line, lexer->cur - lexer->bol + 1);
+    fprintf(out, "%.*s\n", len, lexer->bol);
+    fprintf(out, "%*s^\n", (int)(lexer->cur - lexer->bol), "");
+}
+

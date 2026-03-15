@@ -2,6 +2,7 @@
 #define LEXER_H
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stddef.h>
 
 typedef enum {
@@ -40,5 +41,6 @@ typedef struct {
 
 void lexer_init(lexer_t* lexer, const char* input);
 bool lexer_next(lexer_t* lexer, token_t* token);
+void lexer_report_error(lexer_t* lexer, FILE* out);
 
 #endif
