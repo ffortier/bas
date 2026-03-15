@@ -18,12 +18,12 @@ bas: $(OBJS)
 %.o: %.c
 	clang -c $(CFLAGS) -o $@ $< -MMD -MP -MF $(@:.o=.d)
 
-%_test: %_test.c %.o
+%_test: %_test.o %.o
 	clang -o $@ $^
 	./$@
 
 clean:
-	rm -f $(OBJS) *.d bas
+	rm -f $(OBJS) *.d *_test bas
 
 -include $(wildcard *.d)
 
