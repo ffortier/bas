@@ -1,5 +1,2 @@
-bas
-*.log
-*.d
-*.o
-*_test
+/bas
+/build/

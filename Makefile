@@ -1,6 +1,6 @@
-OBJS = lexer.o parser.o
-TESTSRCS = $(wildcard *_test.c)
-TESTS = $(TESTSRCS:.c=.log)
+OBJS = build/lexer.o build/parser.o
+TESTSRCS = $(wildcard src/*_test.c)
+TESTS = $(patsubst src/%.c,build/%.log,$(TESTSRCS))
 CFLAGS = -Wall -g
 
 .PHONY: run all clean test
@@ -12,20 +12,23 @@ run: bas
 
 test: $(TESTS)
 
-bas: bas.o $(OBJS)
+bas: build/bas.o $(OBJS)
 	clang -o bas $^
 
-%.o: %.c
+build/%.o: src/%.c | build
 	clang -c $(CFLAGS) -o $@ $< -MMD -MP -MF $(@:.o=.d)
 
-%_test: %_test.o $(OBJS)
+build/%_test: build/%_test.o $(OBJS) | build
 	clang -o $@ $^
 
-%_test.log: %_test
+build/%_test.log: build/%_test | build
 	./$< > $@
 
+build:
+	mkdir $@
+
 clean:
-	rm -f $(OBJS) *.d *_test *_test.log *_test.o bas
+	rm -rf build/ bas
 	
--include $(wildcard *.d)
+-include $(wildcard build/*.d)
 
