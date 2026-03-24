@@ -19,8 +19,8 @@
 
 
 #define array_foreach(arr, type, item) for ( \
-        size_t __i = 0, type* item = (arr)->items; \
-        __i < (arr)->count; \
-        i++, item++)
+        type* item = (arr)->items; \
+        item < (arr)->items + (arr)->count; \
+        item++)
 
 #endif

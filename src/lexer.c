@@ -1,8 +1,13 @@
 #include "lexer.h"
 
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+
+static void lexer_set_location(lexer_t* lexer, token_t* token) {
+    token->location.line = lexer->line;
+    token->location.offset = token->begin - lexer->begin;
+    token->location.column = token->begin - lexer->bol + 1;
+}
 
 static bool lexer_read_str(lexer_t* lexer, token_t* token) {
     token->type = TOKEN_TYPE_STR_LIT;
@@ -10,6 +15,7 @@ static bool lexer_read_str(lexer_t* lexer, token_t* token) {
     while (lexer->cur != lexer->end && *++lexer->cur != '"');
     if (lexer->cur == lexer->end) return false;
     token->end = lexer->cur++;
+    lexer_set_location(lexer, token);
     return true;
 }
 
@@ -19,6 +25,7 @@ static bool lexer_read_ident(lexer_t* lexer, token_t* token) {
     while(lexer->cur != lexer->end && isalnum(*++lexer->cur));
     if (*lexer->cur == '$') lexer->cur += 1;
     token->end = lexer->cur;
+    lexer_set_location(lexer, token);
     return true;
 }
 
@@ -27,6 +34,7 @@ static bool lexer_read_num(lexer_t* lexer, token_t* token) {
     token->begin = lexer->cur;
     while(lexer->cur != lexer->end && isdigit(*++lexer->cur));
     token->end = lexer->cur;
+    lexer_set_location(lexer, token);
     return true;
 }
 
@@ -45,6 +53,7 @@ static bool lexer_read_operator(lexer_t* lexer, token_t* token) {
     }
 
     token->end = ++lexer->cur;
+    lexer_set_location(lexer, token);
     return true;
 }
 
@@ -80,15 +89,16 @@ bool lexer_next(lexer_t* lexer, token_t* token) {
     return false;
 }
 
-void lexer_report_error(lexer_t* lexer, FILE* out) {
-    int len = 0;
-
-    while(&lexer->begin[len] != lexer->end && lexer->begin[len] != '\n') {
-        len++;
-    }
-
-    fprintf(out, "Unexpected char at line %zu col %zu\n", lexer->line, lexer->cur - lexer->bol + 1);
-    fprintf(out, "%.*s\n", len, lexer->bol);
-    fprintf(out, "%*s^\n", (int)(lexer->cur - lexer->bol), "");
+bool lexer_peek(lexer_t lexer, token_t* token) {
+    return lexer_next(&lexer, token);
 }
 
+const char* lexer_eol(lexer_t* lexer) {
+    const char* eol = lexer->bol + 1;
+
+    while (eol != lexer->end && *eol != '\n') {
+        eol += 1;
+    }
+
+    return eol;
+}
